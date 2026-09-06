@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<title>إدارة فريق الخماسي</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#0f172a}
+header{background:#0f172a;color:white;padding:18px 16px;position:sticky;top:0;z-index:5}
+h1,h2,h3{margin:0 0 12px}.sub{opacity:.75;font-size:13px}
+nav{display:flex;gap:6px;overflow:auto;background:white;padding:8px;position:sticky;top:76px;z-index:4;box-shadow:0 2px 8px #0001}
+nav button{border:0;background:#e2e8f0;padding:10px 12px;border-radius:10px;white-space:nowrap}
+nav button.active{background:#0f172a;color:#fff}
+main{padding:14px;max-width:900px;margin:auto}.page{display:none}.page.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:white;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0000000d}
+.num{font-size:26px;font-weight:bold}.label{font-size:13px;color:#64748b}
+form{background:white;padding:14px;border-radius:14px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+label{font-size:13px;color:#475569}input,select,textarea{width:100%;margin-top:5px;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;background:#fff}
+textarea{min-height:80px}button.primary{background:#0f172a;color:#fff;border:0;border-radius:9px;padding:11px 15px;margin-top:12px}
+button.danger{background:#fee2e2;color:#991b1b;border:0;border-radius:8px;padding:7px}
+button.small{border:0;border-radius:8px;padding:7px;background:#e2e8f0}
+.list{display:grid;gap:10px}.row{background:white;border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.badge{padding:4px 8px;border-radius:20px;background:#dbeafe;font-size:12px}.muted{color:#64748b;font-size:13px}
+table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden}th,td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:right;font-size:13px}
+.actions{display:flex;gap:6px;flex-wrap:wrap}.empty{padding:25px;text-align:center;color:#64748b;background:white;border-radius:12px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>⚽ إدارة فريق الخماسي</h1><div class="sub">الحضور • التمارين • المباريات • الإصابات • الأداء • السلوك</div></header>
+<nav id="nav">
+<button data-page="dashboard" class="active">الرئيسية</button><button data-page="players">اللاعبون</button>
+<button data-page="attendance">الحضور</button><button data-page="training">التمارين</button>
+<button data-page="matches">المباريات</button><button data-page="injuries">الإصابات</button>
+<button data-page="reports">التقارير</button>
+</nav>
+<main>
+<section id="dashboard" class="page active">
+<h2>لوحة الفريق</h2><div class="cards">
+<div class="card"><div class="num" id="cPlayers">0</div><div class="label">اللاعبون</div></div>
+<div class="card"><div class="num" id="cAttendance">0%</div><div class="label">نسبة الحضور</div></div>
+<div class="card"><div class="num" id="cGoals">0</div><div class="label">الأهداف</div></div>
+<div class="card"><div class="num" id="cInjuries">0</div><div class="label">الإصابات</div></div>
+</div><h3 style="margin-top:18px">أفضل اللاعبين</h3><div id="topPlayers" class="list"></div>
+</section>
+
+<section id="players" class="page"><h2>اللاعبون</h2>
+<form id="playerForm"><div class="grid">
+<label>اسم اللاعب<input id="pName" required></label><label>رقم اللاعب<input id="pNumber" type="number"></label>
+<label>المركز<select id="pPosition"><option>حارس</option><option>مدافع</option><option>وسط</option><option>مهاجم</option></select></label>
+<label>تقييم الأداء /10<input id="pPerformance" type="number" min="0" max="10" step=".1" value="5"></label>
+<label>السلوك /10<input id="pBehavior" type="number" min="0" max="10" step=".1" value="5"></label>
+</div><button class="primary">إضافة لاعب</button></form>
+<div id="playersList" class="list"></div></section>
+
+<section id="attendance" class="page"><h2>الحضور والغياب</h2>
+<form id="attendanceForm"><div class="grid">
+<label>التاريخ<input id="aDate" type="date" required></label><label>اللاعب<select id="aPlayer"></select></label>
+<label>الحالة<select id="aStatus"><option>حاضر</option><option>غائب</option><option>متأخر</option></select></label>
+</div><button class="primary">تسجيل</button></form><div id="attendanceList" class="list"></div></section>
+
+<section id="training" class="page"><h2>التمارين</h2>
+<form id="trainingForm"><div class="grid">
+<label>التاريخ<input id="tDate" type="date" required></label><label>نوع التمرين<input id="tType" placeholder="لياقة / تكتيك / مهارات"></label>
+<label>اللاعب<select id="tPlayer"></select></label><label>التقييم /10<input id="tRate" type="number" min="0" max="10" step=".1" value="5"></label>
+</div><label>ملاحظات<textarea id="tNotes"></textarea></label><button class="primary">إضافة تمرين</button></form><div id="trainingList" class="list"></div></section>
+
+<section id="matches" class="page"><h2>المباريات</h2>
+<form id="matchForm"><div class="grid">
+<label>التاريخ<input id="mDate" type="date" required></label><label>النوع<select id="mType"><option>ودية</option><option>رسمية</option></select></label>
+<label>المنافس<input id="mOpponent" required></label><label>أهداف فريقنا<input id="mFor" type="number" min="0" value="0"></label>
+<label>أهداف المنافس<input id="mAgainst" type="number" min="0" value="0"></label>
+</div><button class="primary">إضافة مباراة</button></form>
+<div id="matchesList" class="list"></div>
+<h3 style="margin-top:18px">إضافة أهداف للاعب</h3>
+<form id="goalForm"><div class="grid">
+<label>المباراة<select id="gMatch"></select></label><label>اللاعب<select id="gPlayer"></select></label>
+<label>الأهداف<input id="gGoals" type="number" min="1" value="1"></label>
+</div><button class="primary">تسجيل الأهداف</button></form>
+<div id="goalsList" class="list"></div>
+</section>
+
+<section id="injuries" class="page"><h2>الإصابات</h2>
+<form id="injuryForm"><div class="grid">
+<label>اللاعب<select id="iPlayer"></select></label><label>التاريخ<input id="iDate" type="date" required></label>
+<label>نوع الإصابة<input id="iType" required></label><label>مدة الغياب (أيام)<input id="iDays" type="number" min="0"></label>
+</div><label>ملاحظات<textarea id="iNotes"></textarea></label><button class="primary">تسجيل الإصابة</button></form><div id="injuriesList" class="list"></div></section>
+
+<section id="reports" class="page"><h2>التقارير والإحصائيات</h2>
+<div class="actions"><button class="small" onclick="exportData()">تصدير البيانات</button><button class="small" onclick="importData()">استيراد البيانات</button><button class="danger" onclick="resetData()">مسح كل البيانات</button></div>
+<div style="margin-top:14px;overflow:auto"><table><thead><tr><th>اللاعب</th><th>الحضور</th><th>الأهداف</th><th>أداء</th><th>سلوك</th><th>التقييم العام</th></tr></thead><tbody id="reportBody"></tbody></table></div>
+</section>
+</main>
+<script>
+const KEY='futsal_team_v1';
+let db=JSON.parse(localStorage.getItem(KEY)||'{"players":[],"attendance":[],"training":[],"matches":[],"goals":[],"injuries":[]}');
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(db));render()};
+const today=()=>new Date().toISOString().slice(0,10);
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.page).classList.add('active');document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
+function player(id){return db.players.find(p=>p.id===id)}
+function opts(id){document.getElementById(id).innerHTML=db.players.map(p=>`<option value="${p.id}">${p.number||''} ${p.name}</option>`).join('')}
+function render(){
+['aPlayer','tPlayer','gPlayer','iPlayer'].forEach(opts);
+document.getElementById('gMatch').innerHTML=db.matches.map(m=>`<option value="${m.id}">${m.date} - ${m.opponent} (${m.type})</option>`).join('');
+document.getElementById('cPlayers').textContent=db.players.length;
+let total=db.attendance.length, present=db.attendance.filter(x=>x.status==='حاضر').length;
+document.getElementById('cAttendance').textContent=total?Math.round(present/total*100)+'%':'0%';
+document.getElementById('cGoals').textContent=db.goals.reduce((s,x)=>s+x.goals,0);
+document.getElementById('cInjuries').textContent=db.injuries.length;
+document.getElementById('playersList').innerHTML=db.players.length?db.players.map(p=>`<div class="row"><div><b>${p.name}</b> <span class="badge">${p.position}</span><div class="muted">رقم ${p.number||'-'} • أداء ${p.performance}/10 • سلوك ${p.behavior}/10</div></div><button class="danger" onclick="del('players','${p.id}')">حذف</button></div>`).join(''):'<div class="empty">لا يوجد لاعبين</div>';
+document.getElementById('attendanceList').innerHTML=list(db.attendance,x=>`${x.date} — ${player(x.playerId)?.name||''}`,x=>x.status);
+document.getElementById('trainingList').innerHTML=list(db.training,x=>`${x.date} — ${player(x.playerId)?.name||''} — ${x.type||'تمرين'}`,x=>`تقييم ${x.rate}/10`);
+document.getElementById('matchesList').innerHTML=list(db.matches,x=>`${x.date} — ${x.opponent}`,x=>`${x.type} | ${x.for}-${x.against}`);
+document.getElementById('goalsList').innerHTML=list(db.goals,x=>`${player(x.playerId)?.name||''} — ${x.goals} هدف`,x=>{let m=db.matches.find(m=>m.id===x.matchId);return m?`${m.type} ضد ${m.opponent}`:''});
+document.getElementById('injuriesList').innerHTML=list(db.injuries,x=>`${player(x.playerId)?.name||''} — ${x.type}`,x=>`${x.date} • ${x.days||0} يوم`);
+let rows=db.players.map(p=>{let at=db.attendance.filter(x=>x.playerId===p.id), pr=at.filter(x=>x.status==='حاضر').length, att=at.length?Math.round(pr/at.length*100):0;let goals=db.goals.filter(x=>x.playerId===p.id).reduce((s,x)=>s+x.goals,0);let score=Math.round(att*.2+(p.performance*10)*.3+(p.behavior*10)*.2+Math.min(goals*5,20));return `<tr><td>${p.name}</td><td>${att}%</td><td>${goals}</td><td>${p.performance}/10</td><td>${p.behavior}/10</td><td><b>${score}%</b></td></tr>`});
+document.getElementById('reportBody').innerHTML=rows.join('');
+let top=[...db.players].map(p=>({p,score:score(p)})).sort((a,b)=>b.score-a.score).slice(0,5);
+document.getElementById('topPlayers').innerHTML=top.length?top.map((x,i)=>`<div class="row"><b>${i+1}. ${x.p.name}</b><span class="badge">${x.score}%</span></div>`).join(''):'<div class="empty">أضف اللاعبين لعرض الترتيب</div>';
+}
+function score(p){let at=db.attendance.filter(x=>x.playerId===p.id),pr=at.filter(x=>x.status==='حاضر').length,att=at.length?pr/at.length*100:0;let g=db.goals.filter(x=>x.playerId===p.id).reduce((s,x)=>s+x.goals,0);return Math.round(att*.2+p.performance*3+p.behavior*2+Math.min(g*5,20))}
+function list(arr,title,detail){return arr.length?arr.slice().reverse().map(x=>`<div class="row"><div><b>${title(x)}</b><div class="muted">${detail(x)}</div></div><button class="danger" onclick="del('${arr===db.attendance?'attendance':arr===db.training?'training':arr===db.matches?'matches':arr===db.goals?'goals':'injuries'}','${x.id}')">حذف</button></div>`).join(''):'<div class="empty">لا توجد بيانات</div>'}
+function add(form,collection,obj){form.onsubmit=e=>{e.preventDefault();db[collection].push({id:crypto.randomUUID(),...obj()});form.reset();save()}}
+add(document.getElementById('playerForm'),'players',()=>({name:pName.value,number:pNumber.value,position:pPosition.value,performance:+pPerformance.value,behavior:+pBehavior.value}));
+add(document.getElementById('attendanceForm'),'attendance',()=>({date:aDate.value,playerId:aPlayer.value,status:aStatus.value}));
+add(document.getElementById('trainingForm'),'training',()=>({date:tDate.value,playerId:tPlayer.value,type:tType.value,rate:+tRate.value,notes:tNotes.value}));
+add(document.getElementById('matchForm'),'matches',()=>({date:mDate.value,type:mType.value,opponent:mOpponent.value,for:+mFor.value,against:+mAgainst.value}));
+add(document.getElementById('goalForm'),'goals',()=>({matchId:gMatch.value,playerId:gPlayer.value,goals:+gGoals.value}));
+add(document.getElementById('injuryForm'),'injuries',()=>({playerId:iPlayer.value,date:iDate.value,type:iType.value,days:+iDays.value,notes:iNotes.value}));
+[aDate,tDate,mDate,iDate].forEach(x=>x.value=today());
+function del(c,id){if(confirm('حذف السجل؟')){db[c]=db[c].filter(x=>x.id!==id);save()}}
+function exportData(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='futsal-team-data.json';a.click()}
+function importData(){let i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save()}catch(e){alert('ملف غير صالح')}};r.readAsText(i.files[0])};i.click()}
+function resetData(){if(confirm('سيتم حذف جميع البيانات نهائياً من هذا الهاتف. متابعة؟')){localStorage.removeItem(KEY);location.reload()}}
+render();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body></html>
