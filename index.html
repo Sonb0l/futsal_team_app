@@ -444,7 +444,7 @@
 </head>
 <body>
     <header><h1>⚽ إدارة فريق الخماسي</h1><div>فريق سلاح الصيانة الملكي • المدير: منصور سعود المنصور</div><div>الحضور • التمارين • المباريات • الإصابات • الأداء • السلوك</div></header><main>
-        <section id="login" class="screen active"><div class="card"><h2>تسجيل الدخول</h2><label>البريد الإلكتروني<input id="email" type="email"></label><label>كلمة المرور<input id="password" type="password"></label><button class="primary" id="loginBtn">دخول</button><p id="loginMsg"></p></div></section>
+        <section id="login" class="screen active"><div class="card"><h2>تسجيل الدخول</h2><label>البريد الإلكتروني<input id="email" type="email"></label><label>كلمة المرور<input id="password" type="password"></label><button class="primary" id="loginBtn">دخول</button><p id="loginMsg" style="color:#b91c1c;margin-top:10px"></p></div></section>
         <section id="app" class="screen">
             <nav id="nav"><button data-page="home" class="active">الرئيسية</button><button data-page="players">اللاعبون</button><button data-page="attendance">الحضور</button><button data-page="training">التمارين</button><button data-page="matches">المباريات</button><button data-page="injuries">الإصابات</button><button data-page="reports">التقارير</button><button data-page="playerProfile">ملف اللاعب</button><button id="logout">خروج</button></nav>
             <div id="home" class="page active"><div class="cards"><div class="card"><div class="num" id="nPlayers">0</div><div class="muted">اللاعبون</div></div><div class="card"><div class="num" id="nAttendance">0%</div><div class="muted">الحضور</div></div><div class="card"><div class="num" id="nGoals">0</div><div class="muted">الأهداف</div></div><div class="card"><div class="num" id="nInjuries">0</div><div class="muted">الإصابات</div></div></div><div class="card"><b>الحساب:</b> <span id="myProfile"></span></div></div>
@@ -459,27 +459,365 @@
     </main>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL="https://dcrfundhoymizdssoumn.supabase.co",SUPABASE_ANON_KEY="sb_publishable_sH3iICcDGzeWHBbxcgAC_g_URl4kzzF";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);let me=null,role="player",players=[],currentPlayerId=null;const $=id=>document.getElementById(id),today=()=>new Date().toISOString().slice(0,10);["aDate","tDate","mDate","iDate"].forEach(id=>$(id).value=today());
-        function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id).classList.add("active")}function page(id){document.querySelectorAll(".page").forEach(x=>x.style.display="none");$(id).style.display="block"}function playerOpts(id,list=players){$(id).innerHTML=list.map(p=>`<option value="${p.id}">${p.shirt_number||""} ${p.name}</option>`).join("")}function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}function dateAgo(days){let d=new Date();d.setDate(d.getDate()-days);return d.toISOString().slice(0,10)}
-        document.querySelectorAll("#nav [data-page]").forEach(b=>b.onclick=async()=>{document.querySelectorAll("#nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");page(b.dataset.page);if(b.dataset.page==='playerProfile')await loadPlayerProfile();else await loadAll()});
-        $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};$("loginBtn").onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$("email").value,password:$("password").value});if(error){$("loginMsg").textContent=error.message;return}boot()};
-        async function boot(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const {data:p,error}=await sb.from("profiles").select("*").eq("id",user.id).single();if(error){$("loginMsg").textContent=error.message;return}me=p;role=p?.role||"player";show("app");["adminPlayerForm","adminAttendanceForm","adminTrainingForm","adminMatchForm","adminGoalForm","adminInjuryForm"].forEach(id=>$(id).classList.toggle("hidden",role!=="admin"));$("myProfile").textContent=(p?.full_name||"")+" — "+(role==='admin'?'مدير / مدرب':'لاعب');await loadAll();if(role!=='admin'){page('playerProfile');document.querySelectorAll("#nav button").forEach(x=>x.classList.remove('active'));document.querySelector('#nav [data-page="playerProfile"]').classList.add('active');await loadPlayerProfile()}}
-        async function loadAll(){let q=sb.from("players").select("*").order("name");if(role!=="admin")q=q.eq("profile_id",me.id);players=(await q).data||[];["aPlayer","tPlayer","gPlayer","iPlayer","profilePlayer"].forEach(id=>playerOpts(id));if(players.length&&!currentPlayerId)currentPlayerId=players[0].id;$("nPlayers").textContent=players.length;await attendance();await training();await matches();await injuries();await reports();renderPlayers()}
-        function renderPlayers(){$("playersList").innerHTML=players.map(p=>`<div class="row"><div><b>${esc(p.name)}</b><div class="muted">${esc(p.position||'')} ${p.shirt_number?'• رقم '+p.shirt_number:''}</div></div><button class="primary" onclick="openPlayer(${p.id})">فتح الملف</button></div>`).join("")||'<div class="empty">لا توجد بيانات لاعبين</div>'}
-        window.openPlayer=async id=>{currentPlayerId=id;$("profilePlayer").value=id;document.querySelectorAll("#nav button").forEach(x=>x.classList.remove('active'));document.querySelector('#nav [data-page="playerProfile"]').classList.add('active');page('playerProfile');await loadPlayerProfile()};
-        async function attendance(){let q=sb.from("attendance").select("*,players(name)").order("attendance_date",{ascending:false});if(role!=="admin")q=q.in("player_id",players.length?players.map(x=>x.id):[-1]);let d=(await q).data||[];$("nAttendance").textContent=d.length?Math.round(d.filter(x=>x.status==='حاضر').length/d.length*100)+"\%":"0\%";$("attendanceList").innerHTML=d.map(x=>`<div class="row"><b>${esc(x.players?.name||'')}</b><span>${esc(x.attendance_date)} — ${esc(x.status)} ${x.notes?'— '+esc(x.notes):''}</span></div>`).join("")||'<div class="empty">لا توجد بيانات</div>'}
-        async function training(){let q=sb.from("training").select("*,players(name)").order("training_date",{ascending:false});if(role!=="admin")q=q.in("player_id",players.length?players.map(x=>x.id):[-1]);let d=(await q).data||[];$("trainingList").innerHTML=d.map(x=>`<div class="trainingItem"><div class="trainingHead"><b>${esc(x.players?.name||'')}</b><span class="badge">${esc(x.training_date)} • ${esc(x.training_type||'تمرين')}</span></div><div class="scores"><div class="score"><b>${x.performance??'-'}</b><small>الأداء</small></div><div class="score"><b>${x.fitness??'-'}</b><small>اللياقة</small></div><div class="score"><b>${x.skills??'-'}</b><small>المهارات</small></div><div class="score"><b>${x.focus??'-'}</b><small>التركيز</small></div><div class="score"><b>${x.discipline??'-'}</b><small>الانضباط</small></div></div>${x.notes?`<div class="note">📝 ${esc(x.notes)}</div>`:''}</div>`).join("")||'<div class="empty">لا توجد سجلات تمارين</div>'}
-        async function matches(){let d=(await sb.from("matches").select("*").order("match_date",{ascending:false})).data||[];$("matchesList").innerHTML=d.map(x=>`<div class="row"><b>${esc(x.match_date)} — ${esc(x.opponent)}</b><span>${esc(x.match_type)} | ${x.team_goals}-${x.opponent_goals}</span></div>`).join("")||'<div class="empty">لا توجد مباريات</div>';$('gMatch').innerHTML=d.map(x=>`<option value="${x.id}">${esc(x.match_date)} — ${esc(x.opponent)}</option>`).join("")}
-        async function injuries(){let q=sb.from("injuries").select("*,players(name)").order("injury_date",{ascending:false});if(role!=="admin")q=q.in("player_id",players.length?players.map(x=>x.id):[-1]);let d=(await q).data||[];$("nInjuries").textContent=d.length;$("injuriesList").innerHTML=d.map(x=>`<div class="row"><b>${esc(x.players?.name||'')}</b><span>${esc(x.injury_date)} — ${esc(x.injury_type)} — ${x.absence_days||0} يوم${x.notes?' — '+esc(x.notes):''}</span></div>`).join("")||'<div class="empty">لا توجد إصابات</div>'}
-        async function reports(){let html="",total=0;for(const p of players){let a=(await sb.from('attendance').select('status').eq('player_id',p.id)).data||[];let att=a.length?Math.round(a.filter(x=>x.status==='حاضر').length/a.length*100):0;let g=(await sb.from('goals').select('goals').eq('player_id',p.id)).data||[];let goals=g.reduce((s,x)=>s+x.goals,0);total+=goals;let tr=(await sb.from('training').select('performance,fitness,skills,focus,discipline').eq('player_id',p.id)).data||[];let avg=tr.length?tr.reduce((s,x)=>s+Number(x.performance||0)+Number(x.fitness||0)+Number(x.skills||0)+Number(x.focus||0)+Number(x.discipline||0),0)/(tr.length*5):0;html+=`<div class="row"><b>${esc(p.name)}</b><span>حضور ${att}% | أهداف ${goals} | متوسط التمارين ${avg.toFixed(1)}/10</span></div>`}$('reportBody').innerHTML=html||'<div class="empty">لا توجد بيانات</div>';$("nGoals").textContent=total}
-        function avg(arr,key){return arr.length?arr.reduce((s,x)=>s+Number(x[key]||0),0)/arr.length:0}
-        async function loadPlayerProfile(){if(!players.length){await loadAll();return}if(role!=='admin'){currentPlayerId=players[0]?.id}else currentPlayerId=Number($("profilePlayer").value\vert{}\vert{}currentPlayerId\vert{}\vert{}players[0]?.id);$("profilePlayer").value=currentPlayerId||'';const p=players.find(x=>Number(x.id)===Number(currentPlayerId));if(!p){$("profileContent").innerHTML='<div class="card empty">لا يوجد لاعب مرتبط بهذا الحساب.</div>';return}let since=$("profilePeriod").value;if(since!=='all')since=dateAgo(Number(since));let aq=sb.from('attendance').select('*').eq('player_id',p.id).order('attendance_date',{ascending:true});let tq=sb.from('training').select('*').eq('player_id',p.id).order('training_date',{ascending:true});let gq=sb.from('goals').select('goals,match_id').eq('player_id',p.id);let iq=sb.from('injuries').select('*').eq('player_id',p.id).order('injury_date',{ascending:false});if(since!=='all'){aq=aq.gte('attendance_date',since);tq=tq.gte('training_date',since);gq=gq;iq=iq.gte('injury_date',since)}let [ar,tr,gr,ir]=await Promise.all([aq,tq,gq,iq]);let A=ar.data||[],T=tr.data||[],G=gr.data||[],I=ir.data||[];let attendancePct=A.length?A.filter(x=>x.status==='حاضر').length/A.length*100:0;let goals=G.reduce((s,x)=>s+Number(x.goals||0),0);let perf=avg(T,'performance'),fit=avg(T,'fitness'),skills=avg(T,'skills'),focus=avg(T,'focus'),disc=avg(T,'discipline');let final=(perf+fit+skills+focus+disc)/5;let chart=T.map(x=>({date:x.training_date,value:Number(x.performance||0)}));let notes=T.filter(x=>x.notes).map(x=>`<div class="trainingItem"><div class="trainingHead"><b>${esc(x.training_type||'تمرين')}</b><span class="badge">${esc(x.training_date)}</span></div><div class="scores"><div class="score"><b>${x.performance??'-'}</b><small>الأداء</small></div><div class="score"><b>${x.fitness??'-'}</b><small>اللياقة</small></div><div class="score"><b>${x.skills??'-'}</b><small>المهارات</small></div><div class="score"><b>${x.focus??'-'}</b><small>التركيز</small></div><div class="score"><b>${x.discipline??'-'}</b><small>الانضباط</small></div></div><div class="note">📝 ${esc(x.notes)}</div></div>`).join('');let strength=[['الأداء',perf],['اللياقة',fit],['المهارات',skills],['التركيز',focus],['الانضباط',disc]].sort((a,b)=>b[1]-a[1]);let need=[...strength].sort((a,b)=>a[1]-b[1]);let bars=chart.slice(-20).map(x=>`<div class="barWrap"><div class="barVal">${x.value.toFixed(1)}</div><div class="bar" style="height:${Math.max(4,x.value*18)}px"></div><div class="barDate">${esc(x.date.slice(5))}</div></div>`).join('');$("profileContent").innerHTML=`<div class="playerHero"><div class="avatar">⚽</div><div class="heroInfo"><h2>${esc(p.name)}</h2><div>${esc(p.position||'')} ${p.shirt_number?'• الرقم '+p.shirt_number:''}</div><div>الفترة: ${since==='all'?'الموسم كامل':'من '+since+' إلى اليوم'}</div></div><div class="heroScore"><strong>${final.toFixed(1)}</strong><span>/10 التقييم العام</span></div></div><div class="metrics"><div class="metric"><strong>${Math.round(attendancePct)}%</strong><span>نسبة الحضور</span></div><div class="metric"><strong>${T.length}</strong><span>عدد التمارين</span></div><div class="metric"><strong>${goals}</strong><span>الأهداف</span></div><div class="metric"><strong>${I.length}</strong><span>الإصابات</span></div></div><div class="card"><div class="title"><h2>📈 تطور الأداء</h2><span class="muted">آخر 20 تمرين</span></div><div class="chart">${bars||'<div class="empty" style="width:100%">لا توجد درجات مسجلة بعد</div>'}</div></div><div class="card"><h2>📊 متوسط التقييمات</h2><div class="scores"><div class="score"><b>${perf.toFixed(1)}</b><small>الأداء</small></div><div class="score"><b>${fit.toFixed(1)}</b><small>اللياقة</small></div><div class="score"><b>${skills.toFixed(1)}</b><small>المهارات</small></div><div class="score"><b>${focus.toFixed(1)}</b><small>التركيز</small></div><div class="score"><b>${disc.toFixed(1)}</b><small>الانضباط</small></div></div></div><div class="card"><h2>⭐ خلاصة المدرب</h2><div class="reportBox"><b>نقاط القوة:</b> ${strength.slice(0,3).map(x=>`<span class="pill">${x[0]}${x[1].toFixed(1)}/10</span>`).join('')}<br><br><b>يحتاج إلى تطوير:</b> ${need.slice(0,2).map(x=>`<span class="pill">${x[0]}${x[1].toFixed(1)}/10</span>`).join('')}<br><br><b>الاستنتاج:</b> ${final>=8?'مستوى مميز ومستقر مع المحافظة على التطور.':final>=6?'مستوى جيد ويحتاج إلى استمرار المتابعة والتطوير.':'يحتاج إلى برنامج متابعة وتطوير إضافي.'}</div></div><div class="card"><h2>📝 جميع ملاحظات التمارين</h2>${notes||'<div class="empty">لا توجد ملاحظات مسجلة.</div>'}</div><div class="card"><h2>🩹 الإصابات</h2>${I.map(x=>`<div class="row"><b>${esc(x.injury_date)} —${esc(x.injury_type)}</b><span>${x.absence_days\vert{}\vert{}0} يوم${x.notes?' — '+esc(x.notes):''}</span></div>`).join('')||'<div class="empty">لا توجد إصابات ضمن الفترة.</div>'}</div><div class="card printOnly"><b>التقرير النهائي للاعب:</b> ${esc(p.name)} — التقييم ${final.toFixed(1)}/10 — الحضور ${Math.round(attendancePct)}% — الأهداف ${goals}</div>`}
-        $("profilePlayer").onchange=()=>{currentPlayerId=Number($("profilePlayer").value);loadPlayerProfile()};$("profilePeriod").onchange=()=>loadPlayerProfile();$("refreshProfile").onclick=()=>loadPlayerProfile();$("printProfile").onclick=()=>window.print();
-        $("addPlayer").onclick=async()=>{let obj={name:$("pName").value,shirt_number:+$("pNumber").value\vert{}\vert{}null,position:$("pPosition").value,birth_date:$("pBirth").value\vert{}\vert{}null,profile_id:$("pProfileId").value.trim()||null};let {error}=await sb.from('players').insert(obj);$("playerMsg").textContent=error?error.message:'تمت إضافة اللاعب';if(!error){$("pName").value='';$("pNumber").value='';$("pProfileId").value='';await loadAll()}};
-        $("addAttendance").onclick=async()=>{let r=await sb.from('attendance').insert({player_id:Number($("aPlayer").value),attendance_date:$("aDate").value,status:$("aStatus").value,notes:$("aNotes").value});if(r.error)alert(r.error.message);else{await loadAll();alert('تم حفظ الحضور')}};
-        $("addTraining").onclick=async()=>{let r=await sb.from('training').insert({player_id:Number($("tPlayer").value),training_date:$("tDate").value,training_type:$("tType").value,performance:+$("tPerformance").value,fitness:+$("tFitness").value,skills:+$("tSkills").value,focus:+$("tFocus").value,discipline:+$("tDiscipline").value,notes:$("tNotes").value});if(r.error)alert(r.error.message);else{await loadAll();alert('تم حفظ ملاحظة التمرين');$("tNotes").value='';await openPlayer(Number($("tPlayer").value))}};
-        $("addMatch").onclick=async()=>{let r=await sb.from('matches').insert({match_date:$("mDate").value,match_type:$("mType").value,opponent:$("mOpponent").value,team_goals:+$("mFor").value,opponent_goals:+$("mAgainst").value,venue:$("mVenue").value});if(r.error)alert(r.error.message);else loadAll()};$("addGoal").onclick=async()=>{let r=await sb.from('goals').insert({match_id:Number($("gMatch").value),player_id:Number($("gPlayer").value),goals:+$("gGoals").value});if(r.error)alert(r.error.message);else loadAll()};$("addInjury").onclick=async()=>{let r=await sb.from('injuries').insert({player_id:Number($("iPlayer").value),injury_date:$("iDate").value,injury_type:$("iType").value,absence_days:+$("iDays").value,notes:$("iNotes").value});if(r.error)alert(r.error.message);else loadAll()};
-        (async()=>{const {data:{session}}=await sb.auth.getSession();if(session)boot()})();
+        const SUPABASE_URL = "https://dcrfundhoymizdssoumn.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_sh3iICdGzeWHBbcgAC_g_URl4kzzF";
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let me = null, role = "player", players = [], currentPlayerId = null;
+        const $ = id => document.getElementById(id), today = () => new Date().toISOString().slice(0, 10);
+        ["aDate", "tDate", "mDate", "iDate"].forEach(id => { if($(id))$(id).value = today(); });
+
+        function show(id) {
+        document.querySelectorAll(".screen").forEach(x => x.classList.remove("active"));
+        $(id).classList.add("active");
+        }
+        function page(id) {
+        document.querySelectorAll(".page").forEach(x => x.style.display = "none");
+        $(id).style.display = "block";
+        }
+        function playerOpts(id, list = players) {
+        if($(id))$(id).innerHTML = list.map(p => `<option value="${p.id}">${p.shirt_number || ""} ${p.name}</option>`).join("");
+        }
+        function esc(v) {
+        return String(v ?? "").replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+        }
+        function dateAgo(days) {
+        let d = new Date(); d.setDate(d.getDate() - days); return d.toISOString().slice(0, 10);
+        }
+
+        document.querySelectorAll("#nav [data-page]").forEach(b => b.onclick = async () => {
+        document.querySelectorAll("#nav button").forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+        page(b.dataset.page);
+        if (b.dataset.page === 'playerProfile') await loadPlayerProfile();
+        else await loadAll();
+        });
+
+        $("logout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+        $("loginBtn").onclick = async () => {
+        const email = $("email").value.trim();
+        const password = $("password").value;
+        $("loginMsg").textContent = "جاري التحقق...";
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) {
+        $("loginMsg").textContent = "خطأ: " + error.message;
+        return;
+        }
+        boot();
+        };
+
+        async function boot() {
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) return;
+        const { data: p, error } = await sb.from("profiles").select("*").eq("id", user.id).maybeSingle();
+        if (error) {
+        $("loginMsg").textContent = "خطأ في ملف المستخدم: " + error.message;
+        return;
+        }
+        me = p || { id: user.id, role: 'admin', full_name: 'منصور سعود المنصور' };
+        role = me.role || "player";
+        show("app");
+        ["adminPlayerForm", "adminAttendanceForm", "adminTrainingForm", "adminMatchForm", "adminGoalForm", "adminInjuryForm"].forEach(id => {
+        if ($(id))$(id).classList.toggle("hidden", role !== "admin");
+        });
+        $("myProfile").textContent = (me.full_name || user.email) + " — " + (role === 'admin' ? 'مدير / مدرب' : 'لاعب');
+        await loadAll();
+        if (role !== 'admin') {
+        page('playerProfile');
+        document.querySelectorAll("#nav button").forEach(x => x.classList.remove('active'));
+        document.querySelector('#nav [data-page="playerProfile"]').classList.add('active');
+        await loadPlayerProfile();
+        }
+        }
+
+        async function loadAll() {
+        let q = sb.from("players").select("*").order("name");
+        if (role !== "admin") q = q.eq("profile_id", me.id);
+        players = (await q).data || [];
+        ["aPlayer", "tPlayer", "gPlayer", "iPlayer", "profilePlayer"].forEach(id => playerOpts(id));
+        if (players.length && !currentPlayerId) currentPlayerId = players[0].id;
+        $("nPlayers").textContent = players.length;
+        await attendance(); await training(); await matches(); await injuries(); await reports();
+        renderPlayers();
+        }
+
+        function renderPlayers() {
+        $("playersList").innerHTML = players.map(p => `
+        <div class="row">
+        <div><b>${esc(p.name)}</b><div class="muted">${esc(p.position || '')} ${p.shirt_number ? '• رقم ' + p.shirt_number : ''}</div></div>
+        <button class="primary" onclick="openPlayer(${p.id})">فتح الملف</button>
+        </div>
+        `).join("") || '<div class="empty">لا توجد بيانات لاعبين</div>';
+        }
+
+        window.openPlayer = async id => {
+        currentPlayerId = id;
+        $("profilePlayer").value = id;
+        document.querySelectorAll("#nav button").forEach(x => x.classList.remove('active'));
+        document.querySelector('#nav [data-page="playerProfile"]').classList.add('active');
+        page('playerProfile');
+        await loadPlayerProfile();
+        };
+
+        async function attendance() {
+        let q = sb.from("attendance").select("*,players(name)").order("attendance_date", { ascending: false });
+        if (role !== "admin") q = q.in("player_id", players.length ? players.map(x => x.id) : [-1]);
+        let d = (await q).data || [];
+        $("nAttendance").textContent = d.length ? Math.round(d.filter(x => x.status === 'حاضر').length / d.length * 100) + "%" : "0%";
+        $("attendanceList").innerHTML = d.map(x => `
+        <div class="row">
+        <b>${esc(x.players?.name || '')}</b>
+        <span>${esc(x.attendance_date)} — ${esc(x.status)} ${x.notes ? '— ' + esc(x.notes) : ''}</span>
+        </div>
+        `).join("") || '<div class="empty">لا توجد بيانات</div>';
+        }
+
+        async function training() {
+        let q = sb.from("training").select("*,players(name)").order("training_date", { ascending: false });
+        if (role !== "admin") q = q.in("player_id", players.length ? players.map(x => x.id) : [-1]);
+        let d = (await q).data || [];
+        $("trainingList").innerHTML = d.map(x => `
+        <div class="trainingItem">
+        <div class="trainingHead"><b>${esc(x.players?.name || '')}</b><span class="badge">${esc(x.training_date)} • ${esc(x.training_type || 'تمرين')}</span></div>
+        <div class="scores">
+        <div class="score"><b>${x.performance ?? '-'}</b><small>الأداء</small></div>
+        <div class="score"><b>${x.fitness ?? '-'}</b><small>اللياقة</small></div>
+        <div class="score"><b>${x.skills ?? '-'}</b><small>المهارات</small></div>
+        <div class="score"><b>${x.focus ?? '-'}</b><small>التركيز</small></div>
+        <div class="score"><b>${x.discipline ?? '-'}</b><small>الانضباط</small></div>
+        </div>
+        ${x.notes ? `<div class="note">📝 ${esc(x.notes)}</div>` : ''}
+        </div>
+        `).join("") || '<div class="empty">لا توجد سجلات تمارين</div>';
+        }
+
+        async function matches() {
+        let d = (await sb.from("matches").select("*").order("match_date", { ascending: false })).data || [];
+        $("matchesList").innerHTML = d.map(x => `
+        <div class="row">
+        <b>${esc(x.match_date)} — ${esc(x.opponent)}</b>
+        <span>${esc(x.match_type)} | ${x.team_goals}-${x.opponent_goals}</span>
+        </div>
+        `).join("") || '<div class="empty">لا توجد مباريات</div>';
+        $('gMatch').innerHTML = d.map(x => `<option value="${x.id}">${esc(x.match_date)} — ${esc(x.opponent)}</option>`).join("");
+        }
+
+        async function injuries() {
+        let q = sb.from("injuries").select("*,players(name)").order("injury_date", { ascending: false });
+        if (role !== "admin") q = q.in("player_id", players.length ? players.map(x => x.id) : [-1]);
+        let d = (await q).data || [];
+        $("nInjuries").textContent = d.length;
+        $("injuriesList").innerHTML = d.map(x => `
+        <div class="row">
+        <b>${esc(x.players?.name || '')}</b>
+        <span>${esc(x.injury_date)} — ${esc(x.injury_type)} — ${x.absence_days || 0} يوم${x.notes ? ' — ' + esc(x.notes) : ''}</span>
+        </div>
+        `).join("") || '<div class="empty">لا توجد إصابات</div>';
+        }
+
+        async function reports() {
+        let html = "", total = 0;
+        for (const p of players) {
+        let a = (await sb.from('attendance').select('status').eq('player_id', p.id)).data || [];
+        let att = a.length ? Math.round(a.filter(x => x.status === 'حاضر').length / a.length * 100) : 0;
+        let g = (await sb.from('goals').select('goals').eq('player_id', p.id)).data || [];
+        let goals = g.reduce((s, x) => s + x.goals, 0);
+        total += goals;
+        let tr = (await sb.from('training').select('performance,fitness,skills,focus,discipline').eq('player_id', p.id)).data || [];
+        let avg = tr.length ? tr.reduce((s, x) => s + Number(x.performance || 0) + Number(x.fitness || 0) + Number(x.skills || 0) + Number(x.focus || 0) + Number(x.discipline || 0), 0) / (tr.length * 5) : 0;
+        html += `<div class="row"><b>${esc(p.name)}</b><span>حضور ${att}% | أهداف ${goals} | متوسط التمارين ${avg.toFixed(1)}/10</span></div>`;
+        }
+        $('reportBody').innerHTML = html || '<div class="empty">لا توجد بيانات</div>';
+        $("nGoals").textContent = total;
+        }
+
+        function avg(arr, key) { return arr.length ? arr.reduce((s, x) => s + Number(x[key] || 0), 0) / arr.length : 0; }
+
+        async function loadPlayerProfile() {
+        if (!players.length) { await loadAll(); return; }
+        if (role !== 'admin') { currentPlayerId = players[0]?.id; }
+        else currentPlayerId = Number($("profilePlayer").value || currentPlayerId || players[0]?.id);
+        $("profilePlayer").value = currentPlayerId || '';
+        const p = players.find(x => Number(x.id) === Number(currentPlayerId));
+        if (!p) { $("profileContent").innerHTML = '<div class="card empty">لا يوجد لاعب مرتبط بهذا الحساب.</div>'; return; }
+
+        let since = $("profilePeriod").value;
+        if (since !== 'all') since = dateAgo(Number(since));
+        let aq = sb.from('attendance').select('*').eq('player_id', p.id).order('attendance_date', { ascending: true });
+        let tq = sb.from('training').select('*').eq('player_id', p.id).order('training_date', { ascending: true });
+        let gq = sb.from('goals').select('goals,match_id').eq('player_id', p.id);
+        let iq = sb.from('injuries').select('*').eq('player_id', p.id).order('injury_date', { ascending: false });
+        if (since !== 'all') {
+        aq = aq.gte('attendance_date', since);
+        tq = tq.gte('training_date', since);
+        iq = iq.gte('injury_date', since);
+        }
+        let [ar, tr, gr, ir] = await Promise.all([aq, tq, gq, iq]);
+        let A = ar.data || [], T = tr.data || [], G = gr.data || [], I = ir.data || [];
+        let attendancePct = A.length ? A.filter(x => x.status === 'حاضر').length / A.length * 100 : 0;
+        let goals = G.reduce((s, x) => s + Number(x.goals || 0), 0);
+        let perf = avg(T, 'performance'), fit = avg(T, 'fitness'), skills = avg(T, 'skills'), focus = avg(T, 'focus'), disc = avg(T, 'discipline');
+        let final = (perf + fit + skills + focus + disc) / 5;
+        let chart = T.map(x => ({ date: x.training_date, value: Number(x.performance || 0) }));
+        let notes = T.filter(x => x.notes).map(x => `
+        <div class="trainingItem">
+        <div class="trainingHead"><b>${esc(x.training_type || 'تمرين')}</b><span class="badge">${esc(x.training_date)}</span></div>
+        <div class="scores">
+        <div class="score"><b>${x.performance ?? '-'}</b><small>الأداء</small></div>
+        <div class="score"><b>${x.fitness ?? '-'}</b><small>اللياقة</small></div>
+        <div class="score"><b>${x.skills ?? '-'}</b><small>المهارات</small></div>
+        <div class="score"><b>${x.focus ?? '-'}</b><small>التركيز</small></div>
+        <div class="score"><b>${x.discipline ?? '-'}</b><small>الانضباط</small></div>
+        </div>
+        <div class="note">📝 ${esc(x.notes)}</div>
+        </div>
+        `).join('');
+        let strength = [['الأداء', perf], ['اللياقة', fit], ['المهارات', skills], ['التركيز', focus], ['الانضباط', disc]].sort((a, b) => b[1] - a[1]);
+        let need = [...strength].sort((a, b) => a[1] - b[1]);
+        let bars = chart.slice(-20).map(x => `
+        <div class="barWrap">
+        <div class="barVal">${x.value.toFixed(1)}</div>
+        <div class="bar" style="height:${Math.max(4, x.value * 18)}px"></div>
+        <div class="barDate">${esc(x.date.slice(5))}</div>
+        </div>
+        `).join('');
+
+        $("profileContent").innerHTML = `
+        <div class="playerHero">
+        <div class="avatar">⚽</div>
+        <div class="heroInfo">
+        <h2>${esc(p.name)}</h2>
+        <div>${esc(p.position || '')} ${p.shirt_number ? '• الرقم ' + p.shirt_number : ''}</div>
+        <div>الفترة: ${since === 'all' ? 'الموسم كامل' : 'من ' + since + ' إلى اليوم'}</div>
+        </div>
+        <div class="heroScore"><strong>${final.toFixed(1)}</strong><span>/10 التقييم العام</span></div>
+        </div>
+        <div class="metrics">
+        <div class="metric"><strong>${Math.round(attendancePct)}%</strong><span>نسبة الحضور</span></div>
+        <div class="metric"><strong>${T.length}</strong><span>عدد التمارين</span></div>
+        <div class="metric"><strong>${goals}</strong><span>الأهداف</span></div>
+        <div class="metric"><strong>${I.length}</strong><span>الإصابات</span></div>
+        </div>
+        <div class="card">
+        <div class="title"><h2>📈 تطور الأداء</h2><span class="muted">آخر 20 تمرين</span></div>
+        <div class="chart">${bars || '<div class="empty" style="width:100%">لا توجد درجات مسجلة بعد</div>'}</div>
+        </div>
+        <div class="card">
+        <h2>📊 متوسط التقييمات</h2>
+        <div class="scores">
+        <div class="score"><b>${perf.toFixed(1)}</b><small>الأداء</small></div>
+        <div class="score"><b>${fit.toFixed(1)}</b><small>اللياقة</small></div>
+        <div class="score"><b>${skills.toFixed(1)}</b><small>المهارات</small></div>
+        <div class="score"><b>${focus.toFixed(1)}</b><small>التركيز</small></div>
+        <div class="score"><b>${disc.toFixed(1)}</b><small>الانضباط</small></div>
+        </div>
+        </div>
+        <div class="card">
+        <h2>⭐ خلاصة المدرب</h2>
+        <div class="reportBox">
+        <b>نقاط القوة:</b> ${strength.slice(0, 3).map(x => `<span class="pill">${x[0]}${x[1].toFixed(1)}/10</span>`).join('')}<br><br>
+        <b>يحتاج إلى تطوير:</b> ${need.slice(0, 2).map(x => `<span class="pill">${x[0]}${x[1].toFixed(1)}/10</span>`).join('')}<br><br>
+        <b>الاستنتاج:</b> ${final >= 8 ? 'مستوى مميز ومستقر مع المحافظة على التطور.' : final >= 6 ? 'مستوى جيد ويحتاج إلى استمرار المتابعة والتطوير.' : 'يحتاج إلى برنامج متابعة وتطوير إضافي.'}
+        </div>
+        </div>
+        <div class="card"><h2>📝 جميع ملاحظات التمارين</h2>${notes || '<div class="empty">لا توجد ملاحظات مسجلة.</div>'}</div>
+        <div class="card"><h2>🩹 الإصابات</h2>${I.map(x => `<div class="row"><b>${esc(x.injury_date)} —${esc(x.injury_type)}</b><span>${x.absence_days \vert{}\vert{} 0} يوم${x.notes ? ' — ' + esc(x.notes) : ''}</span></div>`).join('') || '<div class="empty">لا توجد إصابات ضمن الفترة.</div>'}</div>
+        <div class="card printOnly"><b>التقرير النهائي للاعب:</b> ${esc(p.name)} — التقييم ${final.toFixed(1)}/10 — الحضور ${Math.round(attendancePct)}% — الأهداف ${goals}</div>
+        `;
+        }
+
+        $("profilePlayer").onchange = () => { currentPlayerId = Number($("profilePlayer").value); loadPlayerProfile(); };
+        $("profilePeriod").onchange = () => loadPlayerProfile();
+        $("refreshProfile").onclick = () => loadPlayerProfile();
+        $("printProfile").onclick = () => window.print();
+
+        $("addPlayer").onclick = async () => {
+        let obj = {
+        name: $("pName").value,
+        shirt_number: +$("pNumber").value || null,
+        position: $("pPosition").value,
+        birth_date: $("pBirth").value || null,
+        profile_id: $("pProfileId").value.trim() || null
+        };
+        let { error } = await sb.from('players').insert(obj);
+        $("playerMsg").textContent = error ? error.message : 'تمت إضافة اللاعب';
+        if (!error) {
+        $("pName").value = ''; $("pNumber").value = ''; $("pProfileId").value = '';
+        await loadAll();
+        }
+        };
+
+        $("addAttendance").onclick = async () => {
+        let r = await sb.from('attendance').insert({
+        player_id: Number($("aPlayer").value),
+        attendance_date: $("aDate").value,
+        status: $("aStatus").value,
+        notes: $("aNotes").value
+        });
+        if (r.error) alert(r.error.message);
+        else { await loadAll(); alert('تم حفظ الحضور'); }
+        };
+
+        $("addTraining").onclick = async () => {
+        let r = await sb.from('training').insert({
+        player_id: Number($("tPlayer").value),
+        training_date: $("tDate").value,
+        training_type: $("tType").value,
+        performance: +$("tPerformance").value,
+        fitness: +$("tFitness").value,
+        skills: +$("tSkills").value,
+        focus: +$("tFocus").value,
+        discipline: +$("tDiscipline").value,
+        notes: $("tNotes").value
+        });
+        if (r.error) alert(r.error.message);
+        else {
+        await loadAll();
+        alert('تم حفظ ملاحظة التمرين');
+        $("tNotes").value = '';
+        await openPlayer(Number($("tPlayer").value));
+        }
+        };
+
+        $("addMatch").onclick = async () => {
+        let r = await sb.from('matches').insert({
+        match_date: $("mDate").value,
+        match_type: $("mType").value,
+        opponent: $("mOpponent").value,
+        team_goals: +$("mFor").value,
+        opponent_goals: +$("mAgainst").value,
+        venue: $("mVenue").value
+        });
+        if (r.error) alert(r.error.message);
+        else loadAll();
+        };
+
+        $("addGoal").onclick = async () => {
+        let r = await sb.from('goals').insert({
+        match_id: Number($("gMatch").value),
+        player_id: Number($("gPlayer").value),
+        goals: +$("gGoals").value
+        });
+        if (r.error) alert(r.error.message);
+        else loadAll();
+        };
+
+        $("addInjury").onclick = async () => {
+        let r = await sb.from('injuries').insert({
+        player_id: Number($("iPlayer").value),
+        injury_date: $("iDate").value,
+        injury_type: $("iType").value,
+        absence_days: +$("iDays").value,
+        notes: $("iNotes").value
+        });
+        if (r.error) alert(r.error.message);
+        else loadAll();
+        };
+
+        (async () => {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) boot();
+        })();
     </script>
 </body>
 </html>
