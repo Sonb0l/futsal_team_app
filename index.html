@@ -1,140 +1,1053 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f172a">
-<link rel="manifest" href="manifest.json">
-<title>إدارة فريق الخماسي</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#0f172a}
-header{background:#0f172a;color:white;padding:18px 16px;position:sticky;top:0;z-index:5}
-h1,h2,h3{margin:0 0 12px}.sub{opacity:.75;font-size:13px}
-nav{display:flex;gap:6px;overflow:auto;background:white;padding:8px;position:sticky;top:76px;z-index:4;box-shadow:0 2px 8px #0001}
-nav button{border:0;background:#e2e8f0;padding:10px 12px;border-radius:10px;white-space:nowrap}
-nav button.active{background:#0f172a;color:#fff}
-main{padding:14px;max-width:900px;margin:auto}.page{display:none}.page.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:white;border-radius:14px;padding:14px;box-shadow:0 2px 8px #0000000d}
-.num{font-size:26px;font-weight:bold}.label{font-size:13px;color:#64748b}
-form{background:white;padding:14px;border-radius:14px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-label{font-size:13px;color:#475569}input,select,textarea{width:100%;margin-top:5px;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font-size:15px;background:#fff}
-textarea{min-height:80px}button.primary{background:#0f172a;color:#fff;border:0;border-radius:9px;padding:11px 15px;margin-top:12px}
-button.danger{background:#fee2e2;color:#991b1b;border:0;border-radius:8px;padding:7px}
-button.small{border:0;border-radius:8px;padding:7px;background:#e2e8f0}
-.list{display:grid;gap:10px}.row{background:white;border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}
-.badge{padding:4px 8px;border-radius:20px;background:#dbeafe;font-size:12px}.muted{color:#64748b;font-size:13px}
-table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden}th,td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:right;font-size:13px}
-.actions{display:flex;gap:6px;flex-wrap:wrap}.empty{padding:25px;text-align:center;color:#64748b;background:white;border-radius:12px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="manifest.json">
+    <title>فريق سلاح الصيانة الملكي</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Tahoma, sans-serif;
+            background: #eef2f7;
+            color: #0f172a;
+        }
+
+        header {
+            background: #0f172a;
+            color: #fff;
+            padding: 18px 16px;
+            text-align: right;
+        }
+
+            header h1 {
+                margin: 0 0 7px;
+                font-size: 28px;
+            }
+
+            header div {
+                color: #cbd5e1;
+            }
+
+        .screen, .page {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        main {
+            max-width: 1050px;
+            margin: auto;
+            padding: 14px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 10px #00000012;
+        }
+
+        .grid, .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .cards {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        label {
+            font-size: 13px;
+            color: #475569;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            margin-top: 5px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .primary {
+            background: #0f172a;
+            color: white;
+        }
+
+        .secondary {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .editbtn {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        nav {
+            display: flex;
+            gap: 6px;
+            overflow: auto;
+            background: #fff;
+            padding: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            border-radius: 0 0 12px 12px;
+        }
+
+            nav button {
+                white-space: nowrap;
+                background: #e2e8f0;
+            }
+
+                nav button.active {
+                    background: #0f172a;
+                    color: #fff;
+                }
+
+        .num {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .muted {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .row {
+            background: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #dbeafe;
+            border-radius: 20px;
+            padding: 5px 9px;
+            font-size: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .playerHero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: #0f172a;
+            color: white;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .avatar {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .heroInfo {
+            flex: 1;
+        }
+
+            .heroInfo h2 {
+                margin: 0 0 6px;
+            }
+
+            .heroInfo div {
+                color: #cbd5e1;
+                font-size: 13px;
+            }
+
+        .heroScore {
+            text-align: center;
+        }
+
+            .heroScore strong {
+                font-size: 32px;
+                display: block;
+            }
+
+        .metric {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+            .metric strong {
+                display: block;
+                font-size: 22px;
+            }
+
+            .metric span {
+                font-size: 12px;
+                color: #64748b;
+            }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .trainingItem {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+
+        .trainingHead {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .scores {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 7px;
+            margin-top: 9px;
+        }
+
+        .score {
+            background: #f8fafc;
+            border-radius: 9px;
+            padding: 8px;
+            text-align: center;
+        }
+
+            .score b {
+                display: block;
+                font-size: 17px;
+            }
+
+            .score small {
+                color: #64748b;
+            }
+
+        .note {
+            background: #fffbeb;
+            border-right: 4px solid #f59e0b;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .chart {
+            height: 240px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px;
+            background: #fff;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .barWrap {
+            min-width: 45px;
+            height: 210px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .bar {
+            width: 28px;
+            background: #0f172a;
+            border-radius: 6px 6px 0 0;
+            min-height: 4px;
+        }
+
+        .barVal {
+            font-size: 11px;
+            margin-bottom: 3px;
+        }
+
+        .barDate {
+            font-size: 9px;
+            color: #64748b;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        .reportBox {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px;
+            line-height: 1.9;
+        }
+
+        .pill {
+            display: inline-block;
+            background: #dbeafe;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin: 2px;
+            font-size: 12px;
+        }
+
+        .empty {
+            color: #64748b;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        #editModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #00000070;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+        }
+
+        @media (max-width: 800px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .scores {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .scores {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-<header><h1>⚽ إدارة فريق الخماسي</h1><div class="sub">الحضور • التمارين • المباريات • الإصابات • الأداء • السلوك</div></header>
-<nav id="nav">
-<button data-page="dashboard" class="active">الرئيسية</button><button data-page="players">اللاعبون</button>
-<button data-page="attendance">الحضور</button><button data-page="training">التمارين</button>
-<button data-page="matches">المباريات</button><button data-page="injuries">الإصابات</button>
-<button data-page="reports">التقارير</button>
-</nav>
-<main>
-<section id="dashboard" class="page active">
-<h2>لوحة الفريق</h2><div class="cards">
-<div class="card"><div class="num" id="cPlayers">0</div><div class="label">اللاعبون</div></div>
-<div class="card"><div class="num" id="cAttendance">0%</div><div class="label">نسبة الحضور</div></div>
-<div class="card"><div class="num" id="cGoals">0</div><div class="label">الأهداف</div></div>
-<div class="card"><div class="num" id="cInjuries">0</div><div class="label">الإصابات</div></div>
-</div><h3 style="margin-top:18px">أفضل اللاعبين</h3><div id="topPlayers" class="list"></div>
-</section>
 
-<section id="players" class="page"><h2>اللاعبون</h2>
-<form id="playerForm"><div class="grid">
-<label>اسم اللاعب<input id="pName" required></label><label>رقم اللاعب<input id="pNumber" type="number"></label>
-<label>المركز<select id="pPosition"><option>حارس</option><option>مدافع</option><option>وسط</option><option>مهاجم</option></select></label>
-<label>تقييم الأداء /10<input id="pPerformance" type="number" min="0" max="10" step=".1" value="5"></label>
-<label>السلوك /10<input id="pBehavior" type="number" min="0" max="10" step=".1" value="5"></label>
-</div><button class="primary">إضافة لاعب</button></form>
-<div id="playersList" class="list"></div></section>
+    <header>
+        <h1>⚽ إدارة فريق الخماسي</h1>
+        <div>فريق سلاح الصيانة الملكي • المدير: منصور سعود المنصور</div>
+        <div>الحضور • التمارين • المباريات • الإصابات • الأداء • السلوك</div>
+    </header>
 
-<section id="attendance" class="page"><h2>الحضور والغياب</h2>
-<form id="attendanceForm"><div class="grid">
-<label>التاريخ<input id="aDate" type="date" required></label><label>اللاعب<select id="aPlayer"></select></label>
-<label>الحالة<select id="aStatus"><option>حاضر</option><option>غائب</option><option>متأخر</option></select></label>
-</div><button class="primary">تسجيل</button></form><div id="attendanceList" class="list"></div></section>
+    <main>
+        <section id="login" class="screen active">
+            <div class="card">
+                <h2>تسجيل الدخول</h2>
+                <label>البريد الإلكتروني<input id="email" type="email"></label>
+                <label>كلمة المرور<input id="password" type="password"></label>
+                <button class="primary" id="loginBtn">دخول</button>
+                <p id="loginMsg" style="color:#b91c1c;margin-top:10px"></p>
+            </div>
+        </section>
 
-<section id="training" class="page"><h2>التمارين</h2>
-<form id="trainingForm"><div class="grid">
-<label>التاريخ<input id="tDate" type="date" required></label><label>نوع التمرين<input id="tType" placeholder="لياقة / تكتيك / مهارات"></label>
-<label>اللاعب<select id="tPlayer"></select></label><label>التقييم /10<input id="tRate" type="number" min="0" max="10" step=".1" value="5"></label>
-</div><label>ملاحظات<textarea id="tNotes"></textarea></label><button class="primary">إضافة تمرين</button></form><div id="trainingList" class="list"></div></section>
+        <section id="app" class="screen">
+            <nav id="nav">
+                <button data-page="home" class="active">الرئيسية</button>
+                <button data-page="players">اللاعبون</button>
+                <button data-page="attendance">الحضور</button>
+                <button data-page="training">التمارين</button>
+                <button data-page="matches">المباريات</button>
+                <button data-page="injuries">الإصابات</button>
+                <button data-page="reports">التقارير</button>
+                <button data-page="playerProfile">ملف اللاعب</button>
+                <button id="logout">خروج</button>
+            </nav>
 
-<section id="matches" class="page"><h2>المباريات</h2>
-<form id="matchForm"><div class="grid">
-<label>التاريخ<input id="mDate" type="date" required></label><label>النوع<select id="mType"><option>ودية</option><option>رسمية</option></select></label>
-<label>المنافس<input id="mOpponent" required></label><label>أهداف فريقنا<input id="mFor" type="number" min="0" value="0"></label>
-<label>أهداف المنافس<input id="mAgainst" type="number" min="0" value="0"></label>
-</div><button class="primary">إضافة مباراة</button></form>
-<div id="matchesList" class="list"></div>
-<h3 style="margin-top:18px">إضافة أهداف للاعب</h3>
-<form id="goalForm"><div class="grid">
-<label>المباراة<select id="gMatch"></select></label><label>اللاعب<select id="gPlayer"></select></label>
-<label>الأهداف<input id="gGoals" type="number" min="1" value="1"></label>
-</div><button class="primary">تسجيل الأهداف</button></form>
-<div id="goalsList" class="list"></div>
-</section>
+            <div id="home" class="page active">
+                <div class="cards">
+                    <div class="card"><div class="num" id="nPlayers">0</div><div class="muted">اللاعبون</div></div>
+                    <div class="card"><div class="num" id="nAttendance">0%</div><div class="muted">الحضور</div></div>
+                    <div class="card"><div class="num" id="nGoals">0</div><div class="muted">الأهداف</div></div>
+                    <div class="card"><div class="num" id="nInjuries">0</div><div class="muted">الإصابات</div></div>
+                </div>
+                <div class="card"><b>الحساب:</b> <span id="myProfile"></span></div>
+            </div>
 
-<section id="injuries" class="page"><h2>الإصابات</h2>
-<form id="injuryForm"><div class="grid">
-<label>اللاعب<select id="iPlayer"></select></label><label>التاريخ<input id="iDate" type="date" required></label>
-<label>نوع الإصابة<input id="iType" required></label><label>مدة الغياب (أيام)<input id="iDays" type="number" min="0"></label>
-</div><label>ملاحظات<textarea id="iNotes"></textarea></label><button class="primary">تسجيل الإصابة</button></form><div id="injuriesList" class="list"></div></section>
+            <div id="players" class="page">
+                <div id="adminPlayerForm" class="card">
+                    <h2>إضافة لاعب</h2>
+                    <div class="grid">
+                        <label>الاسم<input id="pName"></label>
+                        <label>الرقم<input id="pNumber" type="number"></label>
+                        <label>
+                            المركز
+                            <select id="pPosition">
+                                <option>حارس</option>
+                                <option>مدافع</option>
+                                <option>وسط</option>
+                                <option>مهاجم</option>
+                            </select>
+                        </label>
+                        <label>تاريخ الميلاد<input id="pBirth" type="date"></label>
+                    </div>
+                    <button class="primary" id="addPlayer">إضافة</button>
+                    <p id="playerMsg"></p>
+                </div>
+                <div class="card">
+                    <div class="title"><h2>اللاعبون</h2></div>
+                    <div id="playersList"></div>
+                </div>
+            </div>
 
-<section id="reports" class="page"><h2>التقارير والإحصائيات</h2>
-<div class="actions"><button class="small" onclick="exportData()">تصدير البيانات</button><button class="small" onclick="importData()">استيراد البيانات</button><button class="danger" onclick="resetData()">مسح كل البيانات</button></div>
-<div style="margin-top:14px;overflow:auto"><table><thead><tr><th>اللاعب</th><th>الحضور</th><th>الأهداف</th><th>أداء</th><th>سلوك</th><th>التقييم العام</th></tr></thead><tbody id="reportBody"></tbody></table></div>
-</section>
-</main>
-<script>
-const KEY='futsal_team_v1';
-let db=JSON.parse(localStorage.getItem(KEY)||'{"players":[],"attendance":[],"training":[],"matches":[],"goals":[],"injuries":[]}');
-const save=()=>{localStorage.setItem(KEY,JSON.stringify(db));render()};
-const today=()=>new Date().toISOString().slice(0,10);
-document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.page).classList.add('active');document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
-function player(id){return db.players.find(p=>p.id===id)}
-function opts(id){document.getElementById(id).innerHTML=db.players.map(p=>`<option value="${p.id}">${p.number||''} ${p.name}</option>`).join('')}
-function render(){
-['aPlayer','tPlayer','gPlayer','iPlayer'].forEach(opts);
-document.getElementById('gMatch').innerHTML=db.matches.map(m=>`<option value="${m.id}">${m.date} - ${m.opponent} (${m.type})</option>`).join('');
-document.getElementById('cPlayers').textContent=db.players.length;
-let total=db.attendance.length, present=db.attendance.filter(x=>x.status==='حاضر').length;
-document.getElementById('cAttendance').textContent=total?Math.round(present/total*100)+'%':'0%';
-document.getElementById('cGoals').textContent=db.goals.reduce((s,x)=>s+x.goals,0);
-document.getElementById('cInjuries').textContent=db.injuries.length;
-document.getElementById('playersList').innerHTML=db.players.length?db.players.map(p=>`<div class="row"><div><b>${p.name}</b> <span class="badge">${p.position}</span><div class="muted">رقم ${p.number||'-'} • أداء ${p.performance}/10 • سلوك ${p.behavior}/10</div></div><button class="danger" onclick="del('players','${p.id}')">حذف</button></div>`).join(''):'<div class="empty">لا يوجد لاعبين</div>';
-document.getElementById('attendanceList').innerHTML=list(db.attendance,x=>`${x.date} — ${player(x.playerId)?.name||''}`,x=>x.status);
-document.getElementById('trainingList').innerHTML=list(db.training,x=>`${x.date} — ${player(x.playerId)?.name||''} — ${x.type||'تمرين'}`,x=>`تقييم ${x.rate}/10`);
-document.getElementById('matchesList').innerHTML=list(db.matches,x=>`${x.date} — ${x.opponent}`,x=>`${x.type} | ${x.for}-${x.against}`);
-document.getElementById('goalsList').innerHTML=list(db.goals,x=>`${player(x.playerId)?.name||''} — ${x.goals} هدف`,x=>{let m=db.matches.find(m=>m.id===x.matchId);return m?`${m.type} ضد ${m.opponent}`:''});
-document.getElementById('injuriesList').innerHTML=list(db.injuries,x=>`${player(x.playerId)?.name||''} — ${x.type}`,x=>`${x.date} • ${x.days||0} يوم`);
-let rows=db.players.map(p=>{let at=db.attendance.filter(x=>x.playerId===p.id), pr=at.filter(x=>x.status==='حاضر').length, att=at.length?Math.round(pr/at.length*100):0;let goals=db.goals.filter(x=>x.playerId===p.id).reduce((s,x)=>s+x.goals,0);let score=Math.round(att*.2+(p.performance*10)*.3+(p.behavior*10)*.2+Math.min(goals*5,20));return `<tr><td>${p.name}</td><td>${att}%</td><td>${goals}</td><td>${p.performance}/10</td><td>${p.behavior}/10</td><td><b>${score}%</b></td></tr>`});
-document.getElementById('reportBody').innerHTML=rows.join('');
-let top=[...db.players].map(p=>({p,score:score(p)})).sort((a,b)=>b.score-a.score).slice(0,5);
-document.getElementById('topPlayers').innerHTML=top.length?top.map((x,i)=>`<div class="row"><b>${i+1}. ${x.p.name}</b><span class="badge">${x.score}%</span></div>`).join(''):'<div class="empty">أضف اللاعبين لعرض الترتيب</div>';
-}
-function score(p){let at=db.attendance.filter(x=>x.playerId===p.id),pr=at.filter(x=>x.status==='حاضر').length,att=at.length?pr/at.length*100:0;let g=db.goals.filter(x=>x.playerId===p.id).reduce((s,x)=>s+x.goals,0);return Math.round(att*.2+p.performance*3+p.behavior*2+Math.min(g*5,20))}
-function list(arr,title,detail){return arr.length?arr.slice().reverse().map(x=>`<div class="row"><div><b>${title(x)}</b><div class="muted">${detail(x)}</div></div><button class="danger" onclick="del('${arr===db.attendance?'attendance':arr===db.training?'training':arr===db.matches?'matches':arr===db.goals?'goals':'injuries'}','${x.id}')">حذف</button></div>`).join(''):'<div class="empty">لا توجد بيانات</div>'}
-function add(form,collection,obj){form.onsubmit=e=>{e.preventDefault();db[collection].push({id:crypto.randomUUID(),...obj()});form.reset();save()}}
-add(document.getElementById('playerForm'),'players',()=>({name:pName.value,number:pNumber.value,position:pPosition.value,performance:+pPerformance.value,behavior:+pBehavior.value}));
-add(document.getElementById('attendanceForm'),'attendance',()=>({date:aDate.value,playerId:aPlayer.value,status:aStatus.value}));
-add(document.getElementById('trainingForm'),'training',()=>({date:tDate.value,playerId:tPlayer.value,type:tType.value,rate:+tRate.value,notes:tNotes.value}));
-add(document.getElementById('matchForm'),'matches',()=>({date:mDate.value,type:mType.value,opponent:mOpponent.value,for:+mFor.value,against:+mAgainst.value}));
-add(document.getElementById('goalForm'),'goals',()=>({matchId:gMatch.value,playerId:gPlayer.value,goals:+gGoals.value}));
-add(document.getElementById('injuryForm'),'injuries',()=>({playerId:iPlayer.value,date:iDate.value,type:iType.value,days:+iDays.value,notes:iNotes.value}));
-[aDate,tDate,mDate,iDate].forEach(x=>x.value=today());
-function del(c,id){if(confirm('حذف السجل؟')){db[c]=db[c].filter(x=>x.id!==id);save()}}
-function exportData(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='futsal-team-data.json';a.click()}
-function importData(){let i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save()}catch(e){alert('ملف غير صالح')}};r.readAsText(i.files[0])};i.click()}
-function resetData(){if(confirm('سيتم حذف جميع البيانات نهائياً من هذا الهاتف. متابعة؟')){localStorage.removeItem(KEY);location.reload()}}
-render();
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-</script>
-</body></html>
+            <div id="attendance" class="page">
+                <div id="adminAttendanceForm" class="card">
+                    <h2>الحضور والغياب</h2>
+                    <div class="grid">
+                        <label>اللاعب<select id="aPlayer"></select></label>
+                        <label>التاريخ<input id="aDate" type="date"></label>
+                        <label>
+                            الحالة
+                            <select id="aStatus">
+                                <option>حاضر</option>
+                                <option>غائب</option>
+                                <option>متأخر</option>
+                                <option>بعذر</option>
+                            </select>
+                        </label>
+                        <label>ملاحظة<input id="aNotes"></label>
+                    </div>
+                    <button class="primary" id="addAttendance">حفظ</button>
+                </div>
+                <div class="card" id="attendanceList"></div>
+            </div>
+
+            <div id="training" class="page">
+                <div id="adminTrainingForm" class="card">
+                    <h2>تسجيل تمرين وملاحظات اللاعب</h2>
+                    <div class="grid">
+                        <label>اللاعب<select id="tPlayer"></select></label>
+                        <label>التاريخ<input id="tDate" type="date"></label>
+                        <label>نوع التمرين<input id="tType" placeholder="لياقة / مهارات / تكتيك..."></label>
+                        <label>الأداء /10<input id="tPerformance" type="number" min="0" max="10" step=".1" value="5"></label>
+                        <label>اللياقة /10<input id="tFitness" type="number" min="0" max="10" step=".1" value="5"></label>
+                        <label>المهارات /10<input id="tSkills" type="number" min="0" max="10" step=".1" value="5"></label>
+                        <label>التركيز والتمركز /10<input id="tFocus" type="number" min="0" max="10" step=".1" value="5"></label>
+                        <label>الانضباط /10<input id="tDiscipline" type="number" min="0" max="10" step=".1" value="5"></label>
+                    </div>
+                    <label>ملاحظات المدرب<textarea id="tNotes" placeholder="اكتب ملاحظتك عن اللاعب في هذا التمرين..."></textarea></label>
+                    <button class="primary" id="addTraining">حفظ سجل التمرين</button>
+                </div>
+                <div class="card" id="trainingList"></div>
+            </div>
+
+            <div id="matches" class="page">
+                <div id="adminMatchForm" class="card">
+                    <h2>مباراة</h2>
+                    <div class="grid">
+                        <label>التاريخ<input id="mDate" type="date"></label>
+                        <label>النوع<select id="mType"><option>ودية</option><option>رسمية</option></select></label>
+                        <label>المنافس<input id="mOpponent"></label>
+                        <label>أهدافنا<input id="mFor" type="number" value="0"></label>
+                        <label>أهداف المنافس<input id="mAgainst" type="number" value="0"></label>
+                        <label>الملعب<input id="mVenue"></label>
+                    </div>
+                    <button class="primary" id="addMatch">حفظ</button>
+                </div>
+                <div class="card"><div id="matchesList"></div></div>
+                <div id="adminGoalForm" class="card">
+                    <h3>تسجيل أهداف</h3>
+                    <div class="grid">
+                        <label>المباراة<select id="gMatch"></select></label>
+                        <label>اللاعب<select id="gPlayer"></select></label>
+                        <label>الأهداف<input id="gGoals" type="number" min="1" value="1"></label>
+                    </div>
+                    <button class="primary" id="addGoal">حفظ</button>
+                </div>
+            </div>
+
+            <div id="injuries" class="page">
+                <div id="adminInjuryForm" class="card">
+                    <h2>الإصابات</h2>
+                    <div class="grid">
+                        <label>اللاعب<select id="iPlayer"></select></label>
+                        <label>التاريخ<input id="iDate" type="date"></label>
+                        <label>الإصابة<input id="iType"></label>
+                        <label>مدة الغياب<input id="iDays" type="number"></label>
+                    </div>
+                    <label>ملاحظات<textarea id="iNotes"></textarea></label>
+                    <button class="primary" id="addInjury">حفظ</button>
+                </div>
+                <div class="card" id="injuriesList"></div>
+            </div>
+
+            <div id="reports" class="page">
+                <div class="card">
+                    <h2>التقارير</h2>
+                    <div id="reportBody"></div>
+                </div>
+            </div>
+
+            <div id="playerProfile" class="page">
+                <div class="card noPrint">
+                    <div class="grid">
+                        <label>اختيار اللاعب<select id="profilePlayer"></select></label>
+                        <label>
+                            الفترة
+                            <select id="profilePeriod">
+                                <option value="all">الموسم كامل</option>
+                                <option value="30">آخر 30 يوم</option>
+                                <option value="90">آخر 90 يوم</option>
+                                <option value="180">آخر 180 يوم</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div style="margin-top:10px">
+                        <button class="primary" id="refreshProfile">تحديث الملف</button>
+                        <button class="secondary" id="printProfile">🖨 طباعة التقرير</button>
+                    </div>
+                </div>
+                <div id="profileContent"></div>
+            </div>
+        </section>
+
+        <!-- نافذة تعديل بيانات اللاعب -->
+        <div id="editModal" class="hidden">
+            <div class="card" style="width:100%;max-width:500px;margin:0;">
+                <h2>تعديل بيانات اللاعب</h2>
+                <input type="hidden" id="editId">
+                <label>الاسم<input id="editName"></label>
+                <label>الرقم<input id="editNumber" type="number"></label>
+                <label>
+                    المركز
+                    <select id="editPosition">
+                        <option>حارس</option>
+                        <option>مدافع</option>
+                        <option>وسط</option>
+                        <option>مهاجم</option>
+                    </select>
+                </label>
+                <div style="margin-top:14px;display:flex;gap:8px;">
+                    <button class="primary" id="saveEditBtn">حفظ التعديل</button>
+                    <button class="secondary" onclick="$('editModal').classList.add('hidden')">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://dcrfundhoymizdssoumn.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcmZ1bmRob3ltaXpkc3NvdW1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM3MTU2MDcsImV4cCI6MjA1OTI5MTYwN30.eYLEpffGv1H3zbQ1JP2zSdYwYrAsFR88YMAFRuldwOo";
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let me = null, role = "player", players = [], currentPlayerId = null;
+        const $ = id => document.getElementById(id);
+        const today = () => new Date().toISOString().slice(0, 10);
+
+        ["aDate", "tDate", "mDate", "iDate"].forEach(id => {
+        if ($(id)) $(id).value = today();
+        });
+
+        function show(id) {
+        document.querySelectorAll(".screen").forEach(x => x.classList.remove("active"));
+        $(id).classList.add("active");
+        }
+
+        function page(id) {
+        document.querySelectorAll(".page").forEach(x => x.style.display = "none");
+        $(id).style.display = "block";
+        }
+
+        function playerOpts(id, list) {
+        const targetList = list || players;
+        if ($(id)) {
+        $(id).innerHTML = targetList.map(p => '<option value="' + p.id + '">' + (p.shirt_number || "") + " " + p.name + '</option>').join("");
+        }
+        }
+
+        function esc(v) {
+        return String(v ?? "").replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+        }
+
+        function dateAgo(days) {
+        let d = new Date();
+        d.setDate(d.getDate() - days);
+        return d.toISOString().slice(0, 10);
+        }
+
+        document.querySelectorAll("#nav [data-page]").forEach(b => {
+        b.onclick = async () => {
+        document.querySelectorAll("#nav button").forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+        page(b.dataset.page);
+        if (b.dataset.page === 'playerProfile') await loadPlayerProfile();
+        else await loadAll();
+        };
+        });
+
+        $("logout").onclick = async () => {
+        await sb.auth.signOut();
+        location.reload();
+        };
+
+        $("loginBtn").onclick = async () => {
+        const email = $("email").value.trim();
+        const password = $("password").value;
+        $("loginMsg").textContent = "جاري التحقق...";
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) {
+        $("loginMsg").textContent = "خطأ: " + error.message;
+        return;
+        }
+        boot();
+        };
+
+        async function boot() {
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) return;
+        const { data: p } = await sb.from("profiles").select("*").eq("id", user.id).maybeSingle();
+        me = p || { id: user.id, role: 'admin', full_name: 'منصور سعود المنصور' };
+        role = me.role || "player";
+        show("app");
+        ["adminPlayerForm", "adminAttendanceForm", "adminTrainingForm", "adminMatchForm", "adminGoalForm", "adminInjuryForm"].forEach(id => {
+        if ($(id)) $(id).classList.toggle("hidden", role !== "admin");
+        });
+        $("myProfile").textContent = (me.full_name || user.email) + " — " + (role === 'admin' ? 'مدير / مدرب' : 'لاعب');
+        await loadAll();
+        if (role !== 'admin') {
+        page('playerProfile');
+        document.querySelectorAll("#nav button").forEach(x => x.classList.remove('active'));
+        document.querySelector('#nav [data-page="playerProfile"]').classList.add('active');
+        await loadPlayerProfile();
+        }
+        }
+
+        async function loadAll() {
+        let q = sb.from("players").select("*").order("name");
+        if (role !== "admin") q = q.eq("profile_id", me.id);
+        players = (await q).data || [];
+        ["aPlayer", "tPlayer", "gPlayer", "iPlayer", "profilePlayer"].forEach(id => playerOpts(id));
+        if (players.length && !currentPlayerId) currentPlayerId = players[0].id;
+        $("nPlayers").textContent = players.length;
+        await attendance();
+        await training();
+        await matches();
+        await injuries();
+        await reports();
+        renderPlayers();
+        }
+
+        function renderPlayers() {
+        $("playersList").innerHTML = players.map(p =>
+        '<div class="row">' +
+        '<div><b>' + esc(p.name) + '</b><div class="muted">' + esc(p.position || '') + (p.shirt_number ? ' • رقم ' + p.shirt_number : '') + '</div></div>' +
+        '<div class="btn-group">' +
+        '<button class="primary" onclick="openPlayer(' + p.id + ')">فتح الملف</button>' +
+        (role === 'admin' ? '<button class="editbtn" onclick="openEditModal(' + p.id + ')">تعديل</button>' +
+        '<button class="danger" onclick="deletePlayer(' + p.id + ')">حذف</button>' : '') +
+        '</div>' +
+        '</div>'
+        ).join("") || '<div class="empty">لا توجد بيانات لاعبين</div>';
+        }
+
+        window.openPlayer = async id => {
+        currentPlayerId = id;
+        $("profilePlayer").value = id;
+        document.querySelectorAll("#nav button").forEach(x => x.classList.remove('active'));
+        document.querySelector('#nav [data-page="playerProfile"]').classList.add('active');
+        page('playerProfile');
+        await loadPlayerProfile();
+        };
+
+        window.openEditModal = id => {
+        const p = players.find(x => x.id === id);
+        if (!p) return;
+        $("editId").value = p.id;
+        $("editName").value = p.name || '';
+        $("editNumber").value = p.shirt_number || '';
+        $("editPosition").value = p.position || 'حارس';
+        $("editModal").classList.remove('hidden');
+        };
+
+        $("saveEditBtn").onclick = async () => {
+        const id = Number($("editId").value);
+        const updates = {
+        name: $("editName").value.trim(),
+        shirt_number: +$("editNumber").value || null,
+        position: $("editPosition").value
+        };
+        const { error } = await sb.from('players').update(updates).eq('id', id);
+        if (error) alert('خطأ في التعديل: ' + error.message);
+        else {
+        $("editModal").classList.add('hidden');
+        await loadAll();
+        alert('تم تعديل بيانات اللاعب بنجاح');
+        }
+        };
+
+        window.deletePlayer = async id => {
+        if (!confirm('هل أنت متأكد من حذف هذا اللاعب وجميع بياناته؟')) return;
+        const { error } = await sb.from('players').delete().eq('id', id);
+        if (error) alert('خطأ أثناء الحذف: ' + error.message);
+        else await loadAll();
+        };
+
+        window.delItem = async (table, id) => {
+        if (!confirm('حذف هذا السجل نهائياً؟')) return;
+        const { error } = await sb.from(table).delete().eq('id', id);
+        if (error) alert('خطأ: ' + error.message);
+        else await loadAll();
+        };
+
+        async function attendance() {
+        let q = sb.from("attendance").select("*,players(name)").order("attendance_date", { ascending: false });
+        if (role !== "admin") q = q.in("player_id", players.length ? players.map(x => x.id) : [-1]);
+        let d = (await q).data || [];
+        $("nAttendance").textContent = d.length ? Math.round(d.filter(x => x.status === 'حاضر').length / d.length * 100) + "%" : "0%";
+        $("attendanceList").innerHTML = d.map(x =>
+        '<div class="row">' +
+        '<div><b>' + esc(x.players?.name || '') + '</b>' +
+        '<div class="muted">' + esc(x.attendance_date) + ' — ' + esc(x.status) + (x.notes ? ' — ' + esc(x.notes) : '') + '</div></div>' +
+        (role === 'admin' ? '<button class="danger" onclick="delItem(\'attendance\',' + x.id + ')">حذف</button>' : '') +
+        '</div>'
+        ).join("") || '<div class="empty">لا توجد بيانات</div>';
+        }
+
+        async function training() {
+        let q = sb.from("training").select("*,players(name)").order("training_date", { ascending: false });
+        if (role !== "admin") q = q.in("player_id", players.length ? players.map(x => x.id) : [-1]);
+        let d = (await q).data || [];
+        $("trainingList").innerHTML = d.map(x =>
+        '<div class="trainingItem">' +
+        '<div class="trainingHead">' +
+        '<b>' + esc(x.players?.name || '') + '</b>' +
+        '<div>' +
+        '<span class="badge">' + esc(x.training_date) + ' • ' + esc(x.training_type || 'تمرين') + '</span>' +
+        (role === 'admin' ? ' <button class="danger" style="padding:4px 8px;font-size:12px;" onclick="delItem(\'training\',' + x.id + ')">حذف</button>' : '') +
+        '</div>' +
+        '</div>' +
+        '<div class="scores">' +
+        '<div class="score"><b>' + (x.performance ?? '-') + '</b><small>الأداء</small></div>' +
+        '<div class="score"><b>' + (x.fitness ?? '-') + '</b><small>اللياقة</small></div>' +
+        '<div class="score"><b>' + (x.skills ?? '-') + '</b><small>المهارات</small></div>' +
+        '<div class="score"><b>' + (x.focus ?? '-') + '</b><small>التركيز</small></div>' +
+        '<div class="score"><b>' + (x.discipline ?? '-') + '</b><small>الانضباط</small></div>' +
+        '</div>' +
+        (x.notes ? '<div class="note">📝 ' + esc(x.notes) + '</div>' : '') +
+        '</div>'
+        ).join("") || '<div class="empty">لا توجد سجلات تمارين</div>';
+        }
+
+        async function matches() {
+        let d = (await sb.from("matches").select("*").order("match_date", { ascending: false })).data || [];
+        $("matchesList").innerHTML = d.map(x =>
+        '<div class="row">' +
+        '<div><b>' + esc(x.match_date) + ' — ' + esc(x.opponent) + '</b>' +
+        '<div class="muted">' + esc(x.match_type) + ' | ' + x.team_goals + '-' + x.opponent_goals + '</div></div>' +
+        (role === 'admin' ? '<button class="danger" onclick="delItem(\'matches\',' + x.id + ')">حذف</button>' : '') +
+        '</div>'
+        ).join("") || '<div class="empty">لا توجد مباريات</div>';
+        $('gMatch').innerHTML = d.map(x => '<option value="' + x.id + '">' + esc(x.match_date) + ' — ' + esc(x.opponent) + '</option>').join("");
+        }
+
+        async function injuries() {
+        let q = sb.from("injuries").select("*,players(name)").order("injury_date", { ascending: false });
+        if (role !== "admin") q = q.in("player_id", players.length ? players.map(x => x.id) : [-1]);
+        let d = (await q).data || [];
+        $("nInjuries").textContent = d.length;
+        $("injuriesList").innerHTML = d.map(x =>
+        '<div class="row">' +
+        '<div><b>' + esc(x.players?.name || '') + '</b>' +
+        '<div class="muted">' + esc(x.injury_date) + ' — ' + esc(x.injury_type) + ' — ' + (x.absence_days || 0) + ' يوم' + (x.notes ? ' — ' + esc(x.notes) : '') + '</div></div>' +
+        (role === 'admin' ? '<button class="danger" onclick="delItem(\'injuries\',' + x.id + ')">حذف</button>' : '') +
+        '</div>'
+        ).join("") || '<div class="empty">لا توجد إصابات</div>';
+        }
+
+        async function reports() {
+        let html = "", total = 0;
+        for (const p of players) {
+        let a = (await sb.from('attendance').select('status').eq('player_id', p.id)).data || [];
+        let att = a.length ? Math.round(a.filter(x => x.status === 'حاضر').length / a.length * 100) : 0;
+        let g = (await sb.from('goals').select('goals').eq('player_id', p.id)).data || [];
+        let goals = g.reduce((s, x) => s + x.goals, 0);
+        total += goals;
+        let tr = (await sb.from('training').select('performance,fitness,skills,focus,discipline').eq('player_id', p.id)).data || [];
+        let avgScore = tr.length ? tr.reduce((s, x) => s + Number(x.performance || 0) + Number(x.fitness || 0) + Number(x.skills || 0) + Number(x.focus || 0) + Number(x.discipline || 0), 0) / (tr.length * 5) : 0;
+        html += '<div class="row"><b>' + esc(p.name) + '</b><span>حضور ' + att + '% | أهداف ' + goals + ' | متوسط التمارين ' + avgScore.toFixed(1) + '/10</span></div>';
+        }
+        $('reportBody').innerHTML = html || '<div class="empty">لا توجد بيانات</div>';
+        $("nGoals").textContent = total;
+        }
+
+        function avg(arr, key) {
+        return arr.length ? arr.reduce((s, x) => s + Number(x[key] || 0), 0) / arr.length : 0;
+        }
+
+        async function loadPlayerProfile() {
+        if (!players.length) { await loadAll(); return; }
+        if (role !== 'admin') {
+        currentPlayerId = players[0]?.id;
+        } else {
+        currentPlayerId = Number($("profilePlayer").value || currentPlayerId || players[0]?.id);
+        }
+        $("profilePlayer").value = currentPlayerId || '';
+        const p = players.find(x => Number(x.id) === Number(currentPlayerId));
+        if (!p) {
+        $("profileContent").innerHTML = '<div class="card empty">لا يوجد لاعب مرتبط بهذا الحساب.</div>';
+        return;
+        }
+
+        let since = $("profilePeriod").value;
+        if (since !== 'all') since = dateAgo(Number(since));
+        let aq = sb.from('attendance').select('*').eq('player_id', p.id).order('attendance_date', { ascending: true });
+        let tq = sb.from('training').select('*').eq('player_id', p.id).order('training_date', { ascending: true });
+        let gq = sb.from('goals').select('goals,match_id').eq('player_id', p.id);
+        let iq = sb.from('injuries').select('*').eq('player_id', p.id).order('injury_date', { ascending: false });
+
+        if (since !== 'all') {
+        aq = aq.gte('attendance_date', since);
+        tq = tq.gte('training_date', since);
+        iq = iq.gte('injury_date', since);
+        }
+
+        let [ar, tr, gr, ir] = await Promise.all([aq, tq, gq, iq]);
+        let A = ar.data || [], T = tr.data || [], G = gr.data || [], I = ir.data || [];
+        let attendancePct = A.length ? A.filter(x => x.status === 'حاضر').length / A.length * 100 : 0;
+        let goals = G.reduce((s, x) => s + Number(x.goals || 0), 0);
+        let perf = avg(T, 'performance'), fit = avg(T, 'fitness'), skills = avg(T, 'skills'), focus = avg(T, 'focus'), disc = avg(T, 'discipline');
+        let final = (perf + fit + skills + focus + disc) / 5;
+        let chart = T.map(x => ({ date: x.training_date, value: Number(x.performance || 0) }));
+
+        let notes = T.filter(x => x.notes).map(x =>
+        '<div class="trainingItem">' +
+        '<div class="trainingHead"><b>' + esc(x.training_type || 'تمرين') + '</b><span class="badge">' + esc(x.training_date) + '</span></div>' +
+        '<div class="scores">' +
+        '<div class="score"><b>' + (x.performance ?? '-') + '</b><small>الأداء</small></div>' +
+        '<div class="score"><b>' + (x.fitness ?? '-') + '</b><small>اللياقة</small></div>' +
+        '<div class="score"><b>' + (x.skills ?? '-') + '</b><small>المهارات</small></div>' +
+        '<div class="score"><b>' + (x.focus ?? '-') + '</b><small>التركيز</small></div>' +
+        '<div class="score"><b>' + (x.discipline ?? '-') + '</b><small>الانضباط</small></div>' +
+        '</div>' +
+        '<div class="note">📝 ' + esc(x.notes) + '</div>' +
+        '</div>'
+        ).join('');
+
+        let strength = [['الأداء', perf], ['اللياقة', fit], ['المهارات', skills], ['التركيز', focus], ['الانضباط', disc]].sort((a, b) => b[1] - a[1]);
+        let need = [['الأداء', perf], ['اللياقة', fit], ['المهارات', skills], ['التركيز', focus], ['الانضباط', disc]].sort((a, b) => a[1] - b[1]);
+
+        let bars = chart.slice(-20).map(x =>
+        '<div class="barWrap">' +
+        '<div class="barVal">' + x.value.toFixed(1) + '</div>' +
+        '<div class="bar" style="height:' + Math.max(4, x.value * 18) + 'px"></div>' +
+        '<div class="barDate">' + esc(x.date.slice(5)) + '</div>' +
+        '</div>'
+        ).join('');
+
+        let conclusion = final >= 8 ? 'مستوى مميز ومستقر مع المحافظة على التطور.' : (final >= 6 ? 'مستوى جيد ويحتاج إلى استمرار المتابعة والتطوير.' : 'يحتاج إلى برنامج متابعة وتطوير إضافي.');
+
+        $("profileContent").innerHTML =
+        '<div class="playerHero">' +
+        '<div class="avatar">⚽</div>' +
+        '<div class="heroInfo">' +
+        '<h2>' + esc(p.name) + '</h2>' +
+        '<div>' + esc(p.position || '') + (p.shirt_number ? ' • الرقم ' + p.shirt_number : '') + '</div>' +
+        '<div>الفترة: ' + (since === 'all' ? 'الموسم كامل' : 'من ' + since + ' إلى اليوم') + '</div>' +
+        '</div>' +
+        '<div class="heroScore"><strong>' + final.toFixed(1) + '</strong><span>/10 التقييم العام</span></div>' +
+        '</div>' +
+        '<div class="metrics">' +
+        '<div class="metric"><strong>' + Math.round(attendancePct) + '%</strong><span>نسبة الحضور</span></div>' +
+        '<div class="metric"><strong>' + T.length + '</strong><span>عدد التمارين</span></div>' +
+        '<div class="metric"><strong>' + goals + '</strong><span>الأهداف</span></div>' +
+        '<div class="metric"><strong>' + I.length + '</strong><span>الإصابات</span></div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<div class="title"><h2>📈 تطور الأداء</h2><span class="muted">آخر 20 تمرين</span></div>' +
+        '<div class="chart">' + (bars || '<div class="empty" style="width:100%">لا توجد درجات مسجلة بعد</div>') + '</div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h2>📊 متوسط التقييمات</h2>' +
+        '<div class="scores">' +
+        '<div class="score"><b>' + perf.toFixed(1) + '</b><small>الأداء</small></div>' +
+        '<div class="score"><b>' + fit.toFixed(1) + '</b><small>اللياقة</small></div>' +
+        '<div class="score"><b>' + skills.toFixed(1) + '</b><small>المهارات</small></div>' +
+        '<div class="score"><b>' + focus.toFixed(1) + '</b><small>التركيز</small></div>' +
+        '<div class="score"><b>' + disc.toFixed(1) + '</b><small>الانضباط</small></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="card">' +
+        '<h2>⭐ خلاصة المدرب</h2>' +
+        '<div class="reportBox">' +
+        '<b>نقاط القوة:</b> ' + strength.slice(0, 3).map(x => '<span class="pill">' + x[0] + ' ' + x[1].toFixed(1) + '/10</span>').join('') + '<br><br>' +
+        '<b>يحتاج إلى تطوير:</b> ' + need.slice(0, 2).map(x => '<span class="pill">' + x[0] + ' ' + x[1].toFixed(1) + '/10</span>').join('') + '<br><br>' +
+        '<b>الاستنتاج:</b> ' + conclusion +
+        '</div>' +
+        '</div>' +
+        '<div class="card"><h2>📝 جميع ملاحظات التمارين</h2>' + (notes || '<div class="empty">لا توجد ملاحظات مسجلة.</div>') + '</div>' +
+        '<div class="card"><h2>🩹 الإصابات</h2>' + (I.map(x => '<div class="row"><b>' + esc(x.injury_date) + ' — ' + esc(x.injury_type) + '</b><span>' + (x.absence_days || 0) + ' يوم' + (x.notes ? ' — ' + esc(x.notes) : '') + '</span></div>').join('') || '<div class="empty">لا توجد إصابات ضمن الفترة.</div>') + '</div>';
+        }
+
+        $("profilePlayer").onchange = () => { currentPlayerId = Number($("profilePlayer").value); loadPlayerProfile(); };
+        $("profilePeriod").onchange = () => loadPlayerProfile();
+        $("refreshProfile").onclick = () => loadPlayerProfile();
+        $("printProfile").onclick = () => window.print();
+
+        $("addPlayer").onclick = async () => {
+        let obj = {
+        name: $("pName").value,
+        shirt_number: +$("pNumber").value || null,
+        position: $("pPosition").value,
+        birth_date: $("pBirth").value || null
+        };
+        let { error } = await sb.from('players').insert(obj);
+        $("playerMsg").textContent = error ? error.message : 'تمت إضافة اللاعب';
+        if (!error) {
+        $("pName").value = ''; $("pNumber").value = '';
+        await loadAll();
+        }
+        };
+
+        $("addAttendance").onclick = async () => {
+        let r = await sb.from('attendance').insert({
+        player_id: Number($("aPlayer").value),
+        attendance_date: $("aDate").value,
+        status: $("aStatus").value,
+        notes: $("aNotes").value
+        });
+        if (r.error) alert(r.error.message);
+        else { await loadAll(); alert('تم حفظ الحضور'); }
+        };
+
+        $("addTraining").onclick = async () => {
+        let r = await sb.from('training').insert({
+        player_id: Number($("tPlayer").value),
+        training_date: $("tDate").value,
+        training_type: $("tType").value,
+        performance: +$("tPerformance").value,
+        fitness: +$("tFitness").value,
+        skills: +$("tSkills").value,
+        focus: +$("tFocus").value,
+        discipline: +$("tDiscipline").value,
+        notes: $("tNotes").value
+        });
+        if (r.error) alert(r.error.message);
+        else {
+        await loadAll();
+        alert('تم حفظ ملاحظة التمرين');
+        $("tNotes").value = '';
+        await openPlayer(Number($("tPlayer").value));
+        }
+        };
+
+        $("addMatch").onclick = async () => {
+        let r = await sb.from('matches').insert({
+        match_date: $("mDate").value,
+        match_type: $("mType").value,
+        opponent: $("mOpponent").value,
+        team_goals: +$("mFor").value,
+        opponent_goals: +$("mAgainst").value,
+        venue: $("mVenue").value
+        });
+        if (r.error) alert(r.error.message);
+        else loadAll();
+        };
+
+        $("addGoal").onclick = async () => {
+        let r = await sb.from('goals').insert({
+        match_id: Number($("gMatch").value),
+        player_id: Number($("gPlayer").value),
+        goals: +$("gGoals").value
+        });
+        if (r.error) alert(r.error.message);
+        else loadAll();
+        };
+
+        $("addInjury").onclick = async () => {
+        let r = await sb.from('injuries').insert({
+        player_id: Number($("iPlayer").value),
+        injury_date: $("iDate").value,
+        injury_type: $("iType").value,
+        absence_days: +$("iDays").value,
+        notes: $("iNotes").value
+        });
+        if (r.error) alert(r.error.message);
+        else loadAll();
+        };
+
+        (async () => {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) boot();
+        })();
+    </script>
+</body>
+</html>
