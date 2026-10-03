@@ -1,1 +1,11 @@
-{"name":"فريق سلاح الصيانة الملكي","short_name":"فريق الصيانة","start_url":"./index.html","display":"standalone","background_color":"#f1f5f9","theme_color":"#0f172a","lang":"ar","dir":"rtl"}
+{
+  "name":"إدارة فريق الخماسي",
+  "short_name":"فريق الخماسي",
+  "start_url":"./index.html",
+  "display":"standalone",
+  "background_color":"#f1f5f9",
+  "theme_color":"#0f172a",
+  "lang":"ar",
+  "dir":"rtl",
+  "icons":[]
+}
